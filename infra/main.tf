@@ -46,6 +46,12 @@ resource "azurerm_storage_container" "main" {
   container_access_type = "private" # No public access — blobs require authentication.
 }
 
+resource "azurerm_storage_container" "test" {
+  name                  = "test-data"
+  storage_account_name  = azurerm_storage_account.main.name
+  container_access_type = "private"
+}
+
 # ─────────────────────────────────────────────────────────────────────────────
 # NOTE: App Service Plan + Linux Web App are intentionally excluded.
 # Azure free subscriptions have a VM quota of 0 and cannot provision any
