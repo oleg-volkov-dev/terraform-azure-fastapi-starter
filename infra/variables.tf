@@ -1,6 +1,3 @@
-# Variables let you parameterize your infrastructure so you can reuse the same
-# Terraform code for different environments (dev, staging, prod) or projects.
-
 variable "resource_group_name" {
   description = "Name of the Azure Resource Group that will contain all resources."
   type        = string
@@ -10,7 +7,7 @@ variable "resource_group_name" {
 variable "location" {
   description = "Azure region where resources will be created (e.g. eastus, westeurope)."
   type        = string
-  default     = "eastus"
+  default     = "westus"
 }
 
 variable "environment" {
@@ -23,18 +20,6 @@ variable "app_name" {
   description = "Short name for the application — used as a prefix in resource names."
   type        = string
   default     = "fastapi-starter"
-}
-
-variable "container_image" {
-  description = "Docker image for the FastAPI app in the format 'REGISTRY/IMAGE:TAG'."
-  type        = string
-  default     = "tiangolo/uvicorn-gunicorn-fastapi:python3.11"
-}
-
-variable "app_service_sku" {
-  description = "App Service Plan SKU (size/tier). B1 is the cheapest paid tier that supports Linux containers."
-  type        = string
-  default     = "B1"
 }
 
 variable "storage_account_tier" {

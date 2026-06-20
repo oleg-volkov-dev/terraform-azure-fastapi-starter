@@ -46,62 +46,9 @@ resource "azurerm_storage_container" "main" {
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
-# App Service Plan
-# The App Service Plan defines the region, OS, and compute size (SKU) for the
-# web app. Multiple web apps can share the same plan to share cost.
+# NOTE: App Service Plan + Linux Web App are intentionally excluded.
+# Azure free subscriptions have a VM quota of 0 and cannot provision any
+# App Service Plan tier that supports Linux containers (B1 and above).
+# To add hosting, upgrade to Pay-As-You-Go or use a paid subscription,
+# then add azurerm_service_plan + azurerm_linux_web_app back.
 # ─────────────────────────────────────────────────────────────────────────────
-resource "azurerm_service_plan" "main" {
-  name                = "asp-${var.app_name}-${var.environment}"
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
-  os_type             = "Linux" # Required for Docker container deployments.
-  sku_name            = var.app_service_sku
-
-  tags = {
-    environment = var.environment
-    project     = var.app_name
-    managed_by  = "terraform"
-  }
-}
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Linux Web App
-# Azure App Service hosts the FastAPI container. Azure pulls the image from
-# Docker Hub (or any registry) and runs it on the plan defined above.
-# ─────────────────────────────────────────────────────────────────────────────
-resource "azurerm_linux_web_app" "main" {
-  name                = "app-${var.app_name}-${var.environment}"
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
-  service_plan_id     = azurerm_service_plan.main.id
-
-  # App settings are surfaced as environment variables inside the container.
-  app_settings = {
-    WEBSITES_ENABLE_APP_SERVICE_STORAGE = "false"
-    ENVIRONMENT                         = var.environment
-    APP_NAME                            = var.app_name
-
-    # Pass storage account credentials so the FastAPI app can access blobs.
-    STORAGE_ACCOUNT_NAME = azurerm_storage_account.main.name
-    STORAGE_ACCOUNT_KEY  = azurerm_storage_account.main.primary_access_key
-  }
-
-  site_config {
-    # Tell App Service we are deploying a Docker container.
-    application_stack {
-      docker_image_name   = var.container_image
-      docker_registry_url = "https://index.docker.io"
-    }
-
-    # Enforce HTTPS — redirect plain HTTP requests automatically.
-    # (App Service handles the TLS termination for you.)
-  }
-
-  https_only = true
-
-  tags = {
-    environment = var.environment
-    project     = var.app_name
-    managed_by  = "terraform"
-  }
-}

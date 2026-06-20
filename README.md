@@ -1,20 +1,23 @@
 # Terraform Azure FastAPI Starter
 
-A learning project that provisions basic Azure infrastructure for a containerized FastAPI app using Terraform.
+A learning project that provisions basic Azure infrastructure using Terraform.
 
 > Not production-ready — built to practice IaC concepts and build a DevOps portfolio piece.
 
 ## What It Creates
 
-- Resource Group
-- Storage Account + private blob container
-- App Service Plan (Linux)
-- Linux Web App running a Docker container
+| Resource | Free tier |
+|---|---|
+| Resource Group | Yes |
+| Storage Account (Standard LRS) | Yes |
+| Private blob container | Yes |
+
+**Not included:** App Service Plan + Linux Web App require a VM quota that Azure free subscriptions do not provide (quota limit: 0 VMs). These resources are documented in `infra/main.tf` with a note on what's needed to add them.
 
 ## Prerequisites
 
 - [Terraform](https://developer.hashicorp.com/terraform/install) >= 1.5
-- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) + an Azure subscription
+- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) + an Azure free subscription
 
 ## Usage
 
@@ -23,7 +26,6 @@ az login
 
 cd infra
 cp terraform.tfvars.example terraform.tfvars
-# edit terraform.tfvars as needed
 
 terraform init
 terraform plan
@@ -37,11 +39,11 @@ terraform destroy
 
 | Variable | Default | Description |
 |---|---|---|
-| `location` | `eastus` | Azure region |
+| `location` | `westus` | Azure region |
 | `environment` | `dev` | Environment label |
 | `app_name` | `fastapi-starter` | Prefix for resource names |
-| `container_image` | `tiangolo/uvicorn-gunicorn-fastapi:python3.11` | Docker image to deploy |
-| `app_service_sku` | `B1` | Compute size (`F1` free tier does not support Linux containers) |
+| `storage_account_tier` | `Standard` | Storage performance tier |
+| `storage_replication_type` | `LRS` | Replication strategy |
 
 ## CI
 
