@@ -1,6 +1,6 @@
 # Terraform Azure FastAPI Starter
 
-Provisions basic Azure storage infrastructure using Terraform. Built as a DevOps/IaC portfolio project.
+Provisions basic Azure storage infrastructure using Terraform.
 
 ## Prerequisites
 
